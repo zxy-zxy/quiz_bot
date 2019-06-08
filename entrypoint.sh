@@ -1,3 +1,3 @@
 #!/bin/sh
 
-python src/manage.py
+python src/manage.py populate_db

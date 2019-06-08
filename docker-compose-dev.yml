@@ -13,7 +13,6 @@ services:
       /quiz_bot/entrypoint.sh
     volumes:
       - ./data:/data/
-      - ./logs:/logs/
       - ./src:/quiz_bot/src/
     depends_on:
      - redis
