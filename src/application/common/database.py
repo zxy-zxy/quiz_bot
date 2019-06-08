@@ -1,7 +1,10 @@
+import logging
 from collections import Iterable
 import json
 
 import redis
+
+logger = logging.getLogger(__name__)
 
 
 class RedisStorage:
@@ -9,6 +12,11 @@ class RedisStorage:
 
     @staticmethod
     def initialize(host=None, port=None, url=None):
+        logger.debug(
+            'Redis instance initialization started, host: {}, port: {}, url: {}'.format(
+                host, port, url
+            )
+        )
         if url:
             RedisStorage.connection = redis.Redis.from_url(url)
         else:

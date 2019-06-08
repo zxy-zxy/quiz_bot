@@ -158,7 +158,7 @@ class VkBot:
             self._vk_api.messages.send(
                 user_id=event.user_id,
                 message='Правильно! Поздравляю! '
-                        'Для следующего вопроса нажмите «Новый вопрос».',
+                'Для следующего вопроса нажмите «Новый вопрос».',
                 random_id=random.randint(1, 1000),
             )
             self._state = VkBot.MENU_CHOOSING

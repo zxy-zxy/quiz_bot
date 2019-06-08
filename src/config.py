@@ -28,14 +28,10 @@ class Config:
         REDIS_SETTINGS = {
             'host': os.getenv('REDIS_HOST'),
             'port': convert_value_to_int(os.getenv('REDIS_PORT')),
-            'url': None
+            'url': None,
         }
     else:
-        REDIS_SETTINGS = {
-            'host': None,
-            'port': None,
-            'url': os.getenv('REDIS_URL')
-        }
+        REDIS_SETTINGS = {'host': None, 'port': None, 'url': os.getenv('REDIS_URL')}
 
     required = [
         'DEBUG',
@@ -71,11 +67,9 @@ def setup_logging():
             }
         },
         'handlers': {
-            'console': {'class': 'logging.StreamHandler', 'formatter': 'standard'},
+            'console': {'class': 'logging.StreamHandler', 'formatter': 'standard'}
         },
-        'loggers': {
-            '': {'handlers': ['console'], 'level': 'DEBUG', 'propagate': True}
-        },
+        'loggers': {'': {'handlers': ['console'], 'level': 'DEBUG', 'propagate': True}},
     }
 
     logging.config.dictConfig(logging_config)
