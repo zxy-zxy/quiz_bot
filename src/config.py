@@ -6,7 +6,7 @@ import logging.config
 def convert_value_to_int(value):
     try:
         return int(value)
-    except ValueError:
+    except TypeError:
         return 0
 
 
