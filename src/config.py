@@ -38,7 +38,7 @@ class Config:
         }
 
     required = [
-        'DEBUG'
+        'DEBUG',
         'QUIZ_QUESTIONS_DIRECTORY',
         'LOGS_DIRECTORY',
         'DEFAULT_ENCODING',
