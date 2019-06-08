@@ -43,7 +43,7 @@ class VkBot:
             user_id=event.user_id,
             message='Привет! Я бот для викторин!',
             keyboard=keyboard.get_keyboard(),
-            random_id=random.randint(1, 1000)
+            random_id=random.randint(1, 1000),
         )
         self._state = VkBot.MENU_CHOOSING
 
@@ -55,12 +55,14 @@ class VkBot:
             except (redis_exceptions.DataError, ValueError) as e:
                 logger.error(
                     'An error occurred during object initialization. '
-                    'User_id: {}, error: {}'.format(event.user_id.message.chat_id, str(e))
+                    'User_id: {}, error: {}'.format(
+                        event.user_id.message.chat_id, str(e)
+                    )
                 )
                 self._vk_api.messages.send(
                     user_id=event.user_id,
                     message='Пожалуйста, попробуйте снова.',
-                    random_id=random.randint(1, 1000)
+                    random_id=random.randint(1, 1000),
                 )
                 self._state = VkBot.MENU_CHOOSING
                 return None
@@ -80,7 +82,7 @@ class VkBot:
                 self._vk_api.messages.send(
                     user_id=event.user_id,
                     message='Пожалуйста, попробуйте снова.',
-                    random_id=random.randint(1, 1000)
+                    random_id=random.randint(1, 1000),
                 )
                 self._state = VkBot.MENU_CHOOSING
                 return None
@@ -88,7 +90,7 @@ class VkBot:
             self._vk_api.messages.send(
                 user_id=event.user_id,
                 message=quiz_question.question,
-                random_id=random.randint(1, 1000)
+                random_id=random.randint(1, 1000),
             )
             self._state = VkBot.USER_ANSWER_PROCESSING
 
@@ -100,7 +102,7 @@ class VkBot:
             self._vk_api.messages.send(
                 user_id=event.user_id,
                 message=f'Ваш  результат: {score}',
-                random_id=random.randint(1, 1000)
+                random_id=random.randint(1, 1000),
             )
 
             self._state = VkBot.MENU_CHOOSING
@@ -116,7 +118,7 @@ class VkBot:
                 self._vk_api.messages.send(
                     user_id=event.user_id,
                     message='Пожалуйста, попробуйте снова.',
-                    random_id=random.randint(1, 1000)
+                    random_id=random.randint(1, 1000),
                 )
                 self._state = VkBot.MENU_CHOOSING
                 return None
@@ -127,8 +129,8 @@ class VkBot:
             self._vk_api.messages.send(
                 user_id=event.user_id,
                 message=f'Внимание, правильный ответ: {quiz_question.answer}'
-                        f'Для следующего вопроса нажмите «Новый вопрос».',
-                random_id=random.randint(1, 1000)
+                f'Для следующего вопроса нажмите «Новый вопрос».',
+                random_id=random.randint(1, 1000),
             )
 
             self._state = VkBot.MENU_CHOOSING
@@ -138,7 +140,7 @@ class VkBot:
             self._vk_api.messages.send(
                 user_id=event.user_id,
                 message='Пожалуйста, попробуйте снова.',
-                random_id=random.randint(1, 1000)
+                random_id=random.randint(1, 1000),
             )
             self._state = VkBot.MENU_CHOOSING
             return None
@@ -155,8 +157,9 @@ class VkBot:
 
             self._vk_api.messages.send(
                 user_id=event.user_id,
-                message='Правильно! Поздравляю! Для следующего вопроса нажмите «Новый вопрос».',
-                random_id=random.randint(1, 1000)
+                message='Правильно! Поздравляю! '
+                        'Для следующего вопроса нажмите «Новый вопрос».',
+                random_id=random.randint(1, 1000),
             )
             self._state = VkBot.MENU_CHOOSING
             return None
@@ -164,7 +167,7 @@ class VkBot:
         self._vk_api.messages.send(
             user_id=event.user_id,
             message='Неправильно... Попробуешь ещё раз?',
-            random_id=random.randint(1, 1000)
+            random_id=random.randint(1, 1000),
         )
 
         self._state = VkBot.USER_ANSWER_PROCESSING

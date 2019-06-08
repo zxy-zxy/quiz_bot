@@ -15,6 +15,7 @@ class ConfigurationError(Exception):
 
 
 class Config:
+    DEBUG = os.getenv('DEBUG')
     QUIZ_QUESTIONS_DIRECTORY = os.getenv('QUIZ_QUESTIONS_DIRECTORY')
     LOGS_DIRECTORY = os.getenv('LOGS_DIRECTORY')
     DEFAULT_ENCODING = 'KOI8-R'
@@ -23,12 +24,21 @@ class Config:
     )
     TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
     VK_GROUP_TOKEN = os.getenv('VK_GROUP_TOKEN')
-    REDIS_SETTINGS = {
-        'host': os.getenv('REDIS_HOST'),
-        'port': convert_value_to_int(os.getenv('REDIS_PORT')),
-    }
+    if DEBUG:
+        REDIS_SETTINGS = {
+            'host': os.getenv('REDIS_HOST'),
+            'port': convert_value_to_int(os.getenv('REDIS_PORT')),
+            'url': None
+        }
+    else:
+        REDIS_SETTINGS = {
+            'host': None,
+            'port': None,
+            'url': os.getenv('REDIS_URL')
+        }
 
     required = [
+        'DEBUG'
         'QUIZ_QUESTIONS_DIRECTORY',
         'LOGS_DIRECTORY',
         'DEFAULT_ENCODING',

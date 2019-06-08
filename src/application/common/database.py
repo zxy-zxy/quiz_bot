@@ -8,8 +8,11 @@ class RedisStorage:
     connection = None
 
     @staticmethod
-    def initialize(host, port):
-        RedisStorage.connection = redis.Redis(host, port)
+    def initialize(host=None, port=None, url=None):
+        if url:
+            RedisStorage.connection = redis.Redis.from_url(url)
+        else:
+            RedisStorage.connection = redis.Redis(host, port)
 
     @staticmethod
     def add_records_to_set(set_name, records):
