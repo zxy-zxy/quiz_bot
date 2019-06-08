@@ -1,7 +1,6 @@
-from config import Config
 from application.bot.vk_bot import VkBot
 
 
-def run_command():
-    vk_bot = VkBot(Config.VK_GROUP_TOKEN)
+def run_command(vk_group_token):
+    vk_bot = VkBot(vk_group_token)
     vk_bot.start()

@@ -3,24 +3,21 @@ import sys
 import itertools
 import logging
 
-from config import Config
 from application.models import QuizQuestion
 from application.parser import QuizQuestionsFileParser
 
 logger = logging.getLogger(__name__)
 
 
-def run_command():
+def run_command(quiz_questions_directory, default_encoding, files_limit=None):
     """
-    Populate redis database with provided quiz questions.
+    Populate redis database with quiz questions from provided files.
     """
     logger.debug(
-        'Attempt to read files from directory {}.'.format(
-            Config.QUIZ_QUESTIONS_DIRECTORY
-        )
+        'Attempt to read files from directory {}.'.format(quiz_questions_directory)
     )
     try:
-        data_directory = Config.QUIZ_QUESTIONS_DIRECTORY
+        data_directory = quiz_questions_directory
         files_list = [
             os.path.join(data_directory, filepath)
             for filepath in os.listdir(data_directory)
@@ -28,22 +25,22 @@ def run_command():
     except FileNotFoundError as e:
         logger.error(
             'An error has occurred during reading exploring directory.'
-            'Directory: {}, error: {}'.format(Config.QUIZ_QUESTIONS_DIRECTORY, str(e))
+            'Directory: {}, error: {}'.format(quiz_questions_directory, str(e))
         )
         sys.exit(1)
 
     logger.debug('DB population started.')
     logger.debug(files_list)
-    populate_db_from_files(files_list)
+    populate_db_from_files(files_list, default_encoding, files_limit)
 
 
-def populate_db_from_files(quiz_questions_filepaths):
+def populate_db_from_files(quiz_questions_filepaths, default_encoding, files_limit):
     quiz_questions_lists_generator = parse_quiz_questions_files(
-        quiz_questions_filepaths, Config.DEFAULT_ENCODING
+        quiz_questions_filepaths, default_encoding
     )
 
     for quiz_questions_list in itertools.islice(
-        quiz_questions_lists_generator, Config.QUIZ_QUESTIONS_FILEPARSING_LIMIT
+        quiz_questions_lists_generator, files_limit
     ):
         QuizQuestion.bulk_save_to_db(quiz_questions_list)
 
