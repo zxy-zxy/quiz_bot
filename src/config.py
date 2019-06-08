@@ -62,8 +62,6 @@ def validate_config(config):
 
 
 def setup_logging():
-    os.makedirs(Config.LOGS_DIRECTORY, exist_ok=True)
-
     logging_config = {
         'version': 1,
         'disable_existing_loggers': False,
@@ -74,14 +72,9 @@ def setup_logging():
         },
         'handlers': {
             'console': {'class': 'logging.StreamHandler', 'formatter': 'standard'},
-            'file': {
-                'class': 'logging.handlers.RotatingFileHandler',
-                'formatter': 'standard',
-                'filename': os.path.join(Config.LOGS_DIRECTORY, 'bot.log'),
-            },
         },
         'loggers': {
-            '': {'handlers': ['console', 'file'], 'level': 'DEBUG', 'propagate': True}
+            '': {'handlers': ['console'], 'level': 'DEBUG', 'propagate': True}
         },
     }
 
