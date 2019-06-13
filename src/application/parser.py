@@ -1,14 +1,12 @@
 import re
 import logging
 
-from application.models import QuizQuestion
-
 logger = logging.getLogger(__name__)
 
 
 class QuizQuestionsFileParser:
     """
-    Parses specific file format to an array of dictionaries with keys:
+    Parse specific file format. Generator which yields dict with keys:
     - question
     - answer
     - comment
@@ -28,7 +26,7 @@ class QuizQuestionsFileParser:
         self.open_file = open_file
         self.list_of_parsed_questions = list()
 
-    def parse_file(self):
+    def __iter__(self):
         line = self.open_file.readline()
         current_question_dict = self.initialize_step_question_dict()
 
@@ -41,16 +39,12 @@ class QuizQuestionsFileParser:
             if key == 'question':
 
                 if current_question_dict['question']:
-
-                    try:
-                        quiz_question = QuizQuestion(**current_question_dict)
-                        self.list_of_parsed_questions.append(quiz_question)
-                    except ValueError as e:
-                        logger.error(
-                            'An error {} has occurred during parsing file: {}'.format(
-                                str(e), self.open_file.name
-                            )
+                    logger.debug(
+                        'New question extracted from file: {}'.format(
+                            current_question_dict
                         )
+                    )
+                    yield current_question_dict
 
                 current_question_dict = self.initialize_step_question_dict()
 
@@ -59,15 +53,10 @@ class QuizQuestionsFileParser:
             line = self.open_file.readline()
 
         if current_question_dict['question']:
-            try:
-                quiz_question = QuizQuestion(**current_question_dict)
-                self.list_of_parsed_questions.append(quiz_question)
-            except ValueError as e:
-                logger.error(
-                    'An error {} has occurred during parsing file: {}'.format(
-                        str(e), self.open_file.name
-                    )
-                )
+            logger.debug(
+                'New question extracted from file: {}'.format(current_question_dict)
+            )
+            yield current_question_dict
 
     def initialize_step_question_dict(self):
         current_question_dict = {

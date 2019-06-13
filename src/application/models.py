@@ -1,29 +1,26 @@
 import logging
 import reprlib
+from dataclasses import dataclass
 
 from application.common.database import RedisStorage
 
 logger = logging.getLogger(__name__)
 
 
+@dataclass
 class QuizQuestion:
-    COLLECTION = 'quiz-questions'
+    question: str
+    answer: str
+    comment: str
+    source: str
+    author: str
+    COLLECTION: str = 'quiz-questions'
 
-    def __init__(self, question, answer, comment, source, author):
-        self.question = question
-        self.answer = answer
-        self.comment = comment
-        self.source = source
-        self.author = author
-
+    def __post_init__(self):
         if not self.question:
-            error_message = 'Question text is not presented.'
-            logger.error(error_message)
-            raise ValueError(error_message)
+            raise ValueError('Question text is not presented.')
         if not self.answer:
-            error_message = 'Answer text is not presented.'
-            logger.error(error_message)
-            raise ValueError(error_message)
+            raise ValueError('Answer text is not presented.')
 
     def __str__(self):
         preview = f'Question: {self.question}. Answer: {self.answer}.'

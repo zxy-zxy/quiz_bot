@@ -3,6 +3,8 @@ import sys
 import itertools
 import logging
 
+from redis import exceptions as redis_exceptions
+
 from application.models import QuizQuestion
 from application.parser import QuizQuestionsFileParser
 
@@ -35,17 +37,29 @@ def run_command(quiz_questions_directory, default_encoding, files_limit=None):
 
 
 def populate_db_from_files(quiz_questions_filepaths, default_encoding, files_limit):
+    """
+    :param quiz_questions_filepaths: list of filepaths to files with questions
+    :param default_encoding: target files encoding
+    :param files_limit if we want to limit how many files we want to parse:
+    Main function of this module, save questions into database.
+    """
     quiz_questions_lists_generator = parse_quiz_questions_files(
         quiz_questions_filepaths, default_encoding
     )
 
     for quiz_questions_list in itertools.islice(
-        quiz_questions_lists_generator, files_limit
+            quiz_questions_lists_generator, files_limit
     ):
-        QuizQuestion.bulk_save_to_db(quiz_questions_list)
+        try:
+            QuizQuestion.bulk_save_to_db(quiz_questions_list)
+        except redis_exceptions.RedisError as e:
+            logger.error(str(e))
 
 
 def parse_quiz_questions_files(quiz_questions_filepaths, encoding):
+    """
+    yields list of QuizQuestion objects.
+    """
     for filepath in quiz_questions_filepaths:
         try:
             yield parse_quiz_question_file(filepath, encoding)
@@ -58,7 +72,38 @@ def parse_quiz_questions_files(quiz_questions_filepaths, encoding):
 
 
 def parse_quiz_question_file(quiz_question_filepath, encoding):
+    """
+    :param quiz_question_filepath: filepath to concrete file with questions
+    :param encoding: default encoding of concrete file
+    :return: list of QuizQuestion objects.
+    """
     with open(quiz_question_filepath, 'r', encoding=encoding) as f:
-        file_parser = QuizQuestionsFileParser(f)
-        file_parser.parse_file()
-        return file_parser.list_of_parsed_questions
+        quiz_question_file_parser = QuizQuestionsFileParser(f)
+
+        question_list = [
+            question
+            for question in convert_question_dict_to_object(quiz_question_file_parser)
+        ]
+        return question_list
+
+
+def convert_question_dict_to_object(quiz_question_file_parser):
+    """
+    Iterate over content of the file,
+    convert dict into QuizQuestion object, yield it.
+    """
+    for question_dict in quiz_question_file_parser:
+        try:
+            quiz_question = QuizQuestion(**question_dict)
+            logger.debug(
+                'Question {} from file {} converted into model object successfully.'.format(
+                    quiz_question, quiz_question_file_parser.open_file.name
+                )
+            )
+            yield quiz_question
+        except ValueError as e:
+            logger.error(
+                'An error {} has occurred during parsing file: {}'.format(
+                    str(e), quiz_question_file_parser.open_file.name
+                )
+            )
