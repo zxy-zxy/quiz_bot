@@ -1,6 +1,7 @@
 import logging
 from collections import Iterable
 import json
+import dataclasses
 
 import redis
 
@@ -26,7 +27,7 @@ class RedisStorage:
     def add_records_to_set(set_name, records):
         if not isinstance(records, Iterable):
             records = [records]
-        dumped_records = [json.dumps(record.to_dict()) for record in records]
+        dumped_records = [json.dumps(dataclasses.asdict(record)) for record in records]
         return RedisStorage.connection.sadd(set_name, *dumped_records)
 
     @staticmethod

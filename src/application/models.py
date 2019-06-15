@@ -1,6 +1,6 @@
 import logging
 import reprlib
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from application.common.database import RedisStorage
 
@@ -11,33 +11,16 @@ logger = logging.getLogger(__name__)
 class QuizQuestion:
     question: str
     answer: str
-    comment: str
-    source: str
-    author: str
-    COLLECTION: str = 'quiz-questions'
+    comment: str = field(repr=False)
+    source: str = field(repr=False)
+    author: str = field(repr=False)
+    COLLECTION: str = field(default='quiz-questions', repr=False)
 
     def __post_init__(self):
         if not self.question:
             raise ValueError('Question text is not presented.')
         if not self.answer:
             raise ValueError('Answer text is not presented.')
-
-    def __str__(self):
-        preview = f'Question: {self.question}. Answer: {self.answer}.'
-        return reprlib.repr(preview)
-
-    def __repr__(self):
-        preview = f'Question: {self.question}. Answer: {self.answer}.'
-        return reprlib.repr(preview)
-
-    def to_dict(self):
-        return {
-            'question': self.question,
-            'answer': self.answer,
-            'comment': self.comment,
-            'source': self.source,
-            'author': self.author,
-        }
 
     def save_to_db(self):
         return RedisStorage.add_records_to_set(QuizQuestion.COLLECTION, self)

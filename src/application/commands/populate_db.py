@@ -48,7 +48,7 @@ def populate_db_from_files(quiz_questions_filepaths, default_encoding, files_lim
     )
 
     for quiz_questions_list in itertools.islice(
-            quiz_questions_lists_generator, files_limit
+        quiz_questions_lists_generator, files_limit
     ):
         try:
             QuizQuestion.bulk_save_to_db(quiz_questions_list)
@@ -96,7 +96,8 @@ def convert_question_dict_to_object(quiz_question_file_parser):
         try:
             quiz_question = QuizQuestion(**question_dict)
             logger.debug(
-                'Question {} from file {} converted into model object successfully.'.format(
+                'Question {} from file {} converted into '
+                'model object successfully.'.format(
                     quiz_question, quiz_question_file_parser.open_file.name
                 )
             )

@@ -1,5 +1,6 @@
 import logging
 import json
+import dataclasses
 
 from telegram.ext import (
     Updater,
@@ -106,14 +107,14 @@ class ConversationStates:
 
         try:
             user_question = UserQuestion(
-                update.message.chat_id, json.dumps(quiz_question.to_dict())
+                update.message.chat_id, json.dumps(dataclasses.asdict(quiz_question))
             )
             user_question.save_to_db()
         except redis_exceptions.DataError as e:
             logger.error(
                 'An error occurred during saving data to database.'
                 'User_id: {}, record: {}, error: {}'.format(
-                    update.message.chat_id, quiz_question.to_dict(), str(e)
+                    update.message.chat_id, dataclasses.asdict(quiz_question), str(e)
                 )
             )
             update.message.reply_text('Пожалуйста, попробуйте снова.')
